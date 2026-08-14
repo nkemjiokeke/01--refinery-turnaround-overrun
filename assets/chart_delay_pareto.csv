@@ -1,0 +1,8 @@
+delay_reason,cost_variance,cum_pct
+Scope Growth / Discovery,3086234.0,0.661
+Material Delay,580945.0,0.785
+Labor Productivity,289085.0,0.847
+Rework / Quality,240987.0,0.898
+Permit / Isolation Wait,237592.0,0.949
+Inspection Hold,181337.0,0.988
+Safety Stand-down,55324.0,1.0
