@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="Refinery DB.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser query pragmas" current="2"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="4522"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="Refinery_TurroundQuery_Data" custom_title="0" dock_id="1" table="4,27:mainRefinery_TurroundQuery_Data"/><dock_state state="000000ff00000000fd0000000100000002000004f40000021efc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000000004f40000012400ffffff0000027f0000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Refinery_TurroundQuery_Data" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="90"/><column index="2" value="101"/><column index="3" value="187"/><column index="4" value="218"/><column index="5" value="93"/><column index="6" value="92"/><column index="7" value="99"/><column index="8" value="195"/><column index="9" value="124"/><column index="10" value="124"/><column index="11" value="124"/><column index="12" value="124"/><column index="13" value="93"/><column index="14" value="81"/><column index="15" value="64"/><column index="16" value="83"/><column index="17" value="72"/><column index="18" value="136"/><column index="19" value="125"/><column index="20" value="145"/><column index="21" value="76"/><column index="22" value="149"/><column index="23" value="195"/><column index="24" value="101"/><column index="25" value="88"/><column index="26" value="121"/><column index="27" value="109"/><column index="28" value="120"/><column index="29" value="66"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="DataNumber_Confirmation">--confirming the number of rows and data samples-- 
+SELECT COUNT (*) as rows, 
+		COUNT (DISTINCT turnaround_id) as events,
+		COUNT (DISTINCT contractor) AS contractors
+FROM Refinery_TurroundQuery_Data;</sql><sql name="Money Leak Concentration">--finding the concentration of specific turnaround area where cost variance is high--
+SELECT
+turnaround_id,
+  ROUND(SUM(CAST(planned_cost AS REAL)),0)  AS planned_cost,
+  ROUND(SUM(CAST(actual_cost  AS REAL)),0)  AS actual_cost,
+  ROUND(SUM(CAST(actual_cost AS REAL)) - SUM(CAST(planned_cost AS REAL)),0) AS cost_variance,
+  ROUND(SUM(CAST(actual_cost AS REAL)) / SUM(CAST(planned_cost AS REAL)) - 1, 3) AS overrun_pct
+FROM Refinery_TurroundQuery_Data
+GROUP BY turnaround_id
+ORDER BY Cost_Variance DESC;</sql><sql name="Leaks_by_Contractor">--Identify variances and overrun percentages by Contractor--  
+SELECT
+contractor,
+COUNT (work_order_id) AS work_done,
+  ROUND(SUM(CAST(planned_cost AS REAL)),0)  AS planned_cost,
+  ROUND(SUM(CAST(actual_cost  AS REAL)),0)  AS actual_cost,
+  ROUND(SUM(CAST(actual_cost AS REAL)) - SUM(CAST(planned_cost AS REAL)),0) AS cost_variance,
+  ROUND(SUM(CAST(actual_cost AS REAL)) / SUM(CAST(planned_cost AS REAL)) - 1, 3) AS overrun_pct
+FROM Refinery_TurroundQuery_Data
+GROUP BY contractor
+ORDER BY Cost_Variance DESC;</sql><sql name="Delta Mechanical Performance">--Does Delta Mechanical Exhbibit this overrun across all years?--  
+SELECT turnaround_id, contractor,
+       ROUND(SUM(actual_cost - planned_cost),0)          AS cost_variance,
+       ROUND(SUM(actual_cost)*1.0/SUM(planned_cost)-1,3) AS overrun_pct
+FROM Refinery_TurroundQuery_Data
+GROUP BY turnaround_id, contractor
+ORDER BY turnaround_id, cost_variance DESC;</sql><sql name="Overrun Analysis">--why is Delta's Peroformance poor? assessing reworkrate and Performance_Factor--  
+SELECT contractor,
+       ROUND(SUM(actual_hours)*1.0/SUM(planned_hours),3)          AS perf_factor,
+       ROUND(AVG(CASE WHEN rework_flag='Y' THEN 1.0 ELSE 0 END),3) AS rework_rate,
+       COUNT(*)                                                    AS work_orders
+FROM Refinery_TurroundQuery_Data
+GROUP BY contractor
+ORDER BY perf_factor DESC;</sql><sql name="Leaks by Discipline">--Identify variances and overrun percentages by discipline--  
+SELECT
+turnaround_id, discipline,
+  ROUND(SUM(CAST(planned_cost AS REAL)),0)  AS planned_cost,
+  ROUND(SUM(CAST(actual_cost  AS REAL)),0)  AS actual_cost,
+  ROUND(SUM(CAST(actual_cost AS REAL)) - SUM(CAST(planned_cost AS REAL)),0) AS cost_variance,
+  ROUND(SUM(CAST(actual_cost AS REAL)) / SUM(CAST(planned_cost AS REAL)) - 1, 3) AS overrun_pct
+FROM Refinery_TurroundQuery_Data
+GROUP BY discipline
+ORDER BY Cost_Variance DESC;</sql><sql name="Leaks_By_Unit">--Identify variances and overrun percentages by Unit--  
+SELECT
+turnaround_id, unit,
+  ROUND(SUM(CAST(planned_cost AS REAL)),0)  AS planned_cost,
+  ROUND(SUM(CAST(actual_cost  AS REAL)),0)  AS actual_cost,
+  ROUND(SUM(CAST(actual_cost AS REAL)) - SUM(CAST(planned_cost AS REAL)),0) AS cost_variance,
+  ROUND(SUM(CAST(actual_cost AS REAL)) / SUM(CAST(planned_cost AS REAL)) - 1, 3) AS overrun_pct
+FROM Refinery_TurroundQuery_Data
+GROUP BY discipline
+ORDER BY Cost_Variance DESC;</sql><sql name="Scope_Growth">-- Q5:is the type or scope of work responsible for these performances?--
+SELECT work_category,
+       COUNT(*)                                            AS work_orders,
+       ROUND(SUM(actual_cost - planned_cost),0)            AS cost_variance,
+       ROUND(SUM(actual_hours)*1.0/SUM(planned_hours),3)   AS perf_factor,
+       ROUND(AVG(julianday(substr(actual_finish,1,10))
+               - julianday(substr(planned_finish,1,10))),1) AS avg_slip_days
+FROM Refinery_TurroundQuery_Data
+GROUP BY work_category
+ORDER BY cost_variance DESC;</sql><sql name="Discipline_Indicator_Analysis">-- How good are the indicators used by discipline?--
+SELECT discipline,
+       ROUND(SUM(actual_hours)*1.0/SUM(planned_hours),3) AS perf_factor,
+       COUNT(*)                                          AS work_orders
+FROM Refinery_TurroundQuery_Data
+GROUP BY discipline
+ORDER BY perf_factor DESC;</sql><sql name="Indicator_Analysis">-- How good are the indicators used by contractors?--
+SELECT contractor,
+       ROUND(SUM(actual_hours)*1.0/SUM(planned_hours),3) AS perf_factor,
+       COUNT(*)                                          AS work_orders
+FROM Refinery_TurroundQuery_Data
+GROUP BY contractor
+ORDER BY perf_factor DESC;</sql><sql name="Primary Delay_Reason">-- What actually causes the delays?--
+WITH v AS (
+  SELECT primary_delay_reason,
+         SUM(actual_cost - planned_cost) AS cost_variance
+  FROM Refinery_TurroundQuery_Data
+  WHERE primary_delay_reason &lt;&gt; 'On Plan'
+  GROUP BY primary_delay_reason
+)
+SELECT primary_delay_reason,
+       ROUND(cost_variance,0) AS cost_variance,
+       ROUND(SUM(cost_variance) OVER (ORDER BY cost_variance DESC),0) AS running_total,
+       ROUND(SUM(cost_variance) OVER (ORDER BY cost_variance DESC) * 1.0
+             / SUM(cost_variance) OVER (), 3) AS cum_pct
+FROM v
+ORDER BY cost_variance DESC;
+-- growth in scope of work or new discoveries continue to take a large space--
+
+</sql><sql name="Critical Path Story">-- Query 6 - what is the critical path story?-- 
+SELECT on_critical_path,
+       COUNT(*)                                          AS work_orders,
+       ROUND(SUM(actual_hours)*1.0/SUM(planned_hours),3) AS perf_factor,
+       ROUND(AVG(julianday(substr(actual_finish,1,10))
+               - julianday(substr(planned_finish,1,10))),1) AS avg_slip_days,
+       ROUND(SUM(actual_cost - planned_cost),0)          AS cost_variance
+FROM Refinery_TurroundQuery_Data
+GROUP BY on_critical_path
+ORDER BY on_critical_path DESC;
+-- Jobs on critical path hold more slip days and this is leading to scope growth and affect turnaround timeCritical-path jobs slip 5.2 days vs 3.7 (40% more); each gates unit restart, so protecting the critical path is a schedule/production lever, not a labour one.--</sql><current_tab id="11"/></tab_sql></sqlb_project>

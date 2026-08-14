@@ -1,0 +1,22 @@
+﻿Sum of Cost_Variance,Dsicipline,,,,,,,,,,,
+Row Labels,Catalyst Handling,Civil,Electrical,Inspection/NDT,Instrumentation,Insulation,Mechanical (Rotating),Mechanical (Static/Vessels),Piping,Scaffolding,Valves,Grand Total
+TAR-2021-CDU,"14,329","11,782","68,755","124,693","61,798","19,946","213,453","186,198","165,666","34,259","232,689","1,133,568"
+TAR-2022-FCC,"18,553","16,458","150,963","203,846","287,845","40,954","190,711","177,199","166,548","24,046","80,735","1,357,858"
+TAR-2023-HCU,"27,692","56,994","23,083","67,774","81,529","22,122","74,549","147,120","76,940","22,245","108,774","708,822"
+TAR-2024-COK,"48,386","7,381","131,806","149,744","84,041","39,174","332,739","301,943","135,758","68,587","43,939","1,343,498"
+Grand Total,"108,960","92,615","374,607","546,057","515,213","122,196","811,452","812,460","544,912","149,137","466,137","4,543,746"
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+Row Labels,Average of Performance_Factor,,,,,,,,,,,
+Catalyst Handling,1.47,,,,,,,,,,,
+Civil,1.28,,,,,,,,,,,
+Electrical,1.36,,,,,,,,,,,
+Inspection/NDT,1.32,,,,,,,,,,,
+Instrumentation,1.44,,,,,,,,,,,
+Insulation,1.36,,,,,,,,,,,
+Mechanical (Rotating),1.35,,,,,,,,,,,
+Mechanical (Static/Vessels),1.43,,,,,,,,,,,
+Piping,1.30,,,,,,,,,,,
+Scaffolding,1.36,,,,,,,,,,,
+Valves,1.33,,,,,,,,,,,
+Grand Total,1.36,,,,,,,,,,,
